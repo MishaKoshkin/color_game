@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chromix — Paint by Color</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="tooltip"></div>
+  <div id="toaster"></div>
+
+  <!-- ═══════════════════════════ START SCREEN ═══════════════════════════ -->
+  <div class="screen active" id="start-screen">
+    <div class="start-card">
+      <div class="logo">Chro<span>mix</span></div>
+      <div class="tagline">Mix · Paint · Compare</div>
+
+      <div class="form-section">
+        <span class="form-label">Картинка</span>
+        <div class="option-row" id="img-opts">
+          <button class="opt-btn selected" data-val="0">Закат</button>
+          <button class="opt-btn" data-val="1">Лес</button>
+          <button class="opt-btn" data-val="2">Океан</button>
+          <button class="opt-btn" data-val="3">Город</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-label">Цветов в палитре</span>
+        <div class="option-row" id="colors-opts">
+          <button class="opt-btn" data-val="4">4</button>
+          <button class="opt-btn selected" data-val="6">6</button>
+          <button class="opt-btn" data-val="8">8</button>
+          <button class="opt-btn" data-val="12">12</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-label">Стиль кисти</span>
+        <div class="option-row" id="style-opts">
+          <button class="opt-btn selected" data-val="watercolor">Акварель</button>
+          <button class="opt-btn" data-val="oil">Масло</button>
+          <button class="opt-btn" data-val="gouache">Гуашь</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-label">Уровень сложности</span>
+        <div class="option-row" id="level-opts">
+          <button class="opt-btn" data-val="easy">Лёгкий</button>
+          <button class="opt-btn selected" data-val="medium">Средний</button>
+          <button class="opt-btn" data-val="hard">Сложный</button>
+        </div>
+      </div>
+
+      <button class="start-btn" id="start-btn">Посмотреть картинку →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PREVIEW SCREEN ════════════════════════ -->
+  <div class="screen" id="preview-screen">
+    <div class="preview-layout">
+      <div class="preview-header">
+        <div class="logo-small">Chro<span>mix</span></div>
+        <div class="preview-title" id="preview-title">Закат над горами</div>
+        <div class="preview-subtitle">Запомните цвета — потом будете воссоздавать по памяти</div>
+      </div>
+      <div class="preview-canvas-wrap">
+        <canvas id="preview-canvas"></canvas>
+      </div>
+      <div class="preview-timer-row">
+        <div class="preview-timer-label">Времени осталось:</div>
+        <div class="preview-timer" id="preview-timer">10</div>
+        <div class="preview-timer-label">сек</div>
+      </div>
+      <button class="start-btn" id="preview-ready-btn" style="max-width:320px;">Я запомнил — начать рисовать →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ GAME SCREEN ═══════════════════════════ -->
+  <div class="screen" id="game-screen">
+    <div class="game-layout">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            Chromix
+            <span class="level-badge" id="level-badge">MEDIUM</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Активный цвет</div>
+          <div class="selected-color-row">
+            <div class="selected-color-swatch" id="selected-swatch"></div>
+            <span class="selected-color-label" id="selected-label">Выберите цвет</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Палитра</div>
+          <div class="palette-grid" id="palette-grid"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Смешивание</div>
+          <div class="mix-area">
+            <div class="mix-slots" id="mix-slots">
+              <div class="mix-slot" data-idx="0"></div>
+              <div class="mix-slot" data-idx="1"></div>
+              <div class="mix-slot" data-idx="2"></div>
+              <span class="mix-arrow">→</span>
+              <div class="mix-result" id="mix-result"></div>
+            </div>
+            <button class="mix-btn" id="use-mix-btn">Использовать цвет</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Инструмент</div>
+          <div class="tool-row">
+            <button class="tool-btn active" id="tool-pen" title="Карандаш (1px)">✏️ 1px</button>
+            <button class="tool-btn" id="tool-brush" title="Кисть (3px)">🖌 3px</button>
+            <button class="tool-btn" id="tool-fill" title="Заливка">🪣 Fill</button>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button class="action-btn" id="clear-btn">Стереть</button>
+          <button class="action-btn" id="peek-btn">👁 Подглянуть</button>
+          <button class="action-btn primary" id="finish-btn">Завершить</button>
+        </div>
+      </aside>
+
+      <main class="canvas-area">
+        <div class="canvas-header">
+          <div class="canvas-title" id="canvas-title">—</div>
+          <div class="progress-info" id="progress-info">0% закрашено</div>
+        </div>
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="game-canvas"></canvas>
+        </div>
+        <div class="canvas-hint">Кликайте или тяните мышь, чтобы рисовать пиксель за пикселем</div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ RESULT SCREEN ════════════════════════ -->
+  <div class="screen" id="result-screen">
+    <div class="result-card">
+      <div class="result-title" id="result-title">Результат</div>
+      <div class="result-subtitle" id="result-subtitle">Уровень завершён</div>
+
+      <div class="result-canvases">
+        <div class="result-canvas-block">
+          <div class="result-canvas-label">Оригинал</div>
+          <canvas id="result-original"></canvas>
+        </div>
+        <div class="result-canvas-block">
+          <div class="result-canvas-label">Ваша работа</div>
+          <canvas id="result-painted"></canvas>
+        </div>
+        <div class="result-canvas-block">
+          <div class="result-canvas-label">Разница</div>
+          <canvas id="result-diff"></canvas>
+          <div class="diff-legend">
+            <div class="diff-legend-item"><div class="diff-swatch" style="background:#27ae60"></div>Точно</div>
+            <div class="diff-legend-item"><div class="diff-swatch" style="background:#f39c12"></div>Близко</div>
+            <div class="diff-legend-item"><div class="diff-swatch" style="background:#e74c3c"></div>Далеко</div>
+            <div class="diff-legend-item"><div class="diff-swatch" style="background:#95a5a6"></div>Не закрашено</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-card">
+          <div class="score-number" id="score-accuracy">—</div>
+          <div class="score-label">Точность цвета</div>
+        </div>
+        <div class="score-card">
+          <div class="score-number" id="score-coverage">—</div>
+          <div class="score-label">Покрытие холста</div>
+        </div>
+        <div class="score-card">
+          <div class="score-number" id="score-total">—</div>
+          <div class="score-label">Итоговый балл</div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="result-btn" id="retry-btn">Попробовать снова</button>
+        <button class="result-btn" id="menu-btn">В меню</button>
+        <button class="result-btn primary" id="next-btn">Следующий уровень →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/images.js"></script>
+  <script src="js/palette.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
